@@ -1,9 +1,22 @@
 pipeline {
     agent any
-    tools {
-        maven 'MonMaven' // On utilise l'outil configuré au TP2
+    
+    parameters {
+        choice(name: 'ENVIRONNEMENT', choices: ['dev', 'recette', 'prod'], description: 'Sélectionnez l\'environnement de déploiement')
+        string(name: 'VERSION', defaultValue: '1.0.0', description: 'Entrez le numéro de version de l\'artefact')
     }
+    
+    tools {
+        maven 'MonMaven'
+    }
+    
     stages {
+        stage('Affichage des Paramètres') {
+            steps {
+                echo "Lancement du build pour l'environnement : ${params.ENVIRONNEMENT}"
+                echo "Version spécifiée : ${params.VERSION}"
+            }
+        }
         stage('Nettoyage & Préparation') {
             steps {
                 echo 'Nettoyage de l\'espace de travail...'
@@ -13,7 +26,7 @@ pipeline {
         stage('Compilation') {
             steps {
                 echo 'Compilation de l\'application...'
-                sh 'mvn compile'
+                sh "mvn compile"
             }
         }
         stage('Tests Unitaires') {
@@ -24,7 +37,7 @@ pipeline {
         }
         stage('SonarQube Analysis') {
             steps {
-                echo 'Analyse de la qualité du code avec SonarQube...'
+                echo "Analyse SonarQube pour la version ${params.VERSION}..."
                 withSonarQubeEnv('SonarQube') {
                     sh 'mvn sonar:sonar'
                 }
