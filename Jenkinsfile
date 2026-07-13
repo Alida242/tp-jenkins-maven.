@@ -7,19 +7,27 @@ pipeline {
         stage('Nettoyage & Préparation') {
             steps {
                 echo 'Nettoyage de l\'espace de travail...'
-                sh 'mvn clean'
+                bat 'mvn clean'
             }
         }
         stage('Compilation') {
             steps {
                 echo 'Compilation de l\'application...'
-                sh 'mvn compile'
+                bat 'mvn compile'
             }
         }
         stage('Tests Unitaires') {
             steps {
                 echo 'Exécution des tests unitaires...'
-                sh 'mvn test'
+                bat 'mvn test'
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Analyse de la qualité du code avec SonarQube...'
+                withSonarQubeEnv('SonarQube') {
+                    bat 'mvn sonar:sonar'
+                }
             }
         }
     }
