@@ -1,1 +1,1 @@
-# tp-jenkins-maven.
+Test du déclenchement automatique
